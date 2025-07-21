@@ -1,0 +1,60 @@
+[
+  {
+    "id": "6f11c334-8947-4626-9d43-9675e2f388de",
+    "mobile": "0988888888",
+    "otpExpires": 1752747154353,
+    "otpCode": "929677",
+    "email": "example@gmail.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "gender": "male",
+    "birthDate": "2022-10-02",
+    "nationalCode": 3730798568,
+    "payment": {
+      "shaba_code": "string",
+      "debitCard_code": "string",
+      "accountIdentifier": "string"
+    }
+  },
+  {
+    "id": "0e1fce98-a5d4-4c13-a957-8a6a3112f6ed",
+    "mobile": "09370841433",
+    "otpExpires": 1753129969079,
+    "otpCode": "561236",
+    "email": "dimo.steamer@gmai.com",
+    "fullName": "امید",
+    "nationalCode": "1451617628",
+    "gender": "male",
+    "birthDate": "",
+    "payment": {
+      "debitCard_code": "1231231231231231"
+    }
+  },
+  {
+    "id": "c8007c26-3f42-4e6c-bdb1-6a51c2dc66c3",
+    "mobile": "09387618897",
+    "otpExpires": 1752940044470,
+    "otpCode": "192668"
+  },
+  {
+    "id": "2b9c4afb-31d9-4fc2-8ed7-567459599990",
+    "mobile": "09123445431",
+    "otpExpires": 1753041596010,
+    "otpCode": "830790",
+    "email": "example@gmail.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "gender": "male",
+    "birthDate": "2022-10-02"
+  },
+  {
+    "id": "48192c8f-bcd2-4ed9-888b-85d44c136b90",
+    "mobile": "09170567571",
+    "otpExpires": 1753125210761,
+    "otpCode": "883955",
+    "fullName": "امید",
+    "nationalCode": "1451617628",
+    "gender": "male",
+    "birthDate": "2025-06-25"
+  }
+]

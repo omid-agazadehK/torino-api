@@ -1,0 +1,23 @@
+{
+  "id": "d4e5f678-90ab-cdef-1234-567890abcdef",
+  "origin": {
+    "id": "1",
+    "name": "تهران"
+  },
+  "destination": {
+    "id": "6",
+    "name": "هولیر"
+  },
+  "startDate": "2024-12-20T00:00:00.000Z",
+  "endDate": "2024-12-25T00:00:00.000Z",
+  "title": "هولر",
+  "fleetVehicle": "شاسی‌بلند",
+  "price": 10500000,
+  "availableSeats": 17,
+  "insurance": false,
+  "options": [
+    "نهار و صبحانه",
+    "هفل پنج ستاره"
+  ],
+  "image": "http://localhost:6500/static/images/arbilTour.png"
+}
