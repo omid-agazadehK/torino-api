@@ -59,12 +59,12 @@ exports.checkOtp = async (req, res) => {
 
     // Generate tokens
     const accessToken = jwt.sign(
-      { id: user._id, mobile: user.mobile },
+      { _id: user._id, mobile: user.mobile },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
     const refreshToken = jwt.sign(
-      { id: user._id, mobile: user.mobile },
+      { _id: user._id, mobile: user.mobile },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -73,7 +73,7 @@ exports.checkOtp = async (req, res) => {
       accessToken,
       refreshToken,
       user: {
-        id: user._id,
+        _id: user._id,
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         mobile: user.mobile,
@@ -98,7 +98,7 @@ exports.refreshToken = (req, res) => {
     }
 
     const accessToken = jwt.sign(
-      { id: userData.id, mobile: userData.mobile },
+      { _id: userData._id, mobile: userData.mobile },
       JWT_SECRET,
       { expiresIn: '1h' }
     );

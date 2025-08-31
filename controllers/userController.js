@@ -5,7 +5,7 @@ const Tour = require("../models/Tour");
 
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.getUserById(req.user._id); // استفاده از _id
+    const user = await User.getUserById(req.user._id); 
     if (!user) {
       return res
         .status(404)
