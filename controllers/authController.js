@@ -1,34 +1,39 @@
-const User = require('../models/User'); // Adjusted for JSON-based model
+const User = require('../models/User'); // JSON-based model
 const jwt = require('jsonwebtoken');
-
 
 // Environment Variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
 // Send OTP Controller
-export const sendOtp = async (req, res) => {
+exports.sendOtp = async (req, res) => {
   const { mobile } = req.body;
   if (!mobile) {
     return res.status(400).json({ message: 'شماره موبایل را به درستی وارد کنید!' });
   }
 
   try {
+    // Generate OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // Find or create user
     let user = await User.getUserByMobile(mobile);
     if (!user) {
       user = await User.createUser({ mobile });
+    } else {
+      // Update existing user
+      user = await User.updateUser(user._id, { mobile });
     }
 
     // Update OTP and expiration
     const updatedUser = await User.updateUser(user._id, {
       otpCode,
-      otpExpires: Date.now() + 10 * 60 * 1000,
+      otpExpires: Date.now() + 10 * 60 * 1000, // OTP valid for 10 minutes
     });
 
+    // Simulate sending OTP via SMS
     console.log(`OTP for ${mobile} is ${otpCode}`);
 
-    res.json({ message: 'کد اعتبارسنجی ارسال شد.', code: otpCode });
+    res.json({ message: 'کد اعتبارسنجی ارسال شد.', code: otpCode }); // Include code for testing
   } catch (error) {
     console.error('Error in sendOtp:', error.message);
     res.status(500).json({ message: 'خطا در ارسال کد اعتبارسنجی.' });
@@ -36,7 +41,7 @@ export const sendOtp = async (req, res) => {
 };
 
 // Check OTP Controller
-export const checkOtp = async (req, res) => {
+exports.checkOtp = async (req, res) => {
   const { mobile, code } = req.body;
   if (!mobile || !code) {
     return res.status(400).json({ message: 'لطفاً شماره موبایل و کد را وارد کنید!' });
@@ -52,8 +57,17 @@ export const checkOtp = async (req, res) => {
       return res.status(400).json({ message: 'کد وارد شده فاقد اعتبار است!' });
     }
 
-    const accessToken = jwt.sign({ id: user._id, mobile: user.mobile }, JWT_SECRET, { expiresIn: '1h' });
-    const refreshToken = jwt.sign({ id: user._id, mobile: user.mobile }, JWT_SECRET, { expiresIn: '7d' });
+    // Generate tokens
+    const accessToken = jwt.sign(
+      { id: user._id, mobile: user.mobile },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    const refreshToken = jwt.sign(
+      { id: user._id, mobile: user.mobile },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     res.json({
       accessToken,
@@ -72,7 +86,7 @@ export const checkOtp = async (req, res) => {
 };
 
 // Refresh Token Controller
-export const refreshToken = (req, res) => {
+exports.refreshToken = (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {
     return res.status(400).json({ message: 'خطای دسترسی، مجددا وارد شوید!' });
@@ -83,7 +97,12 @@ export const refreshToken = (req, res) => {
       return res.status(403).json({ message: 'خطای دسترسی، مجددا وارد شوید!' });
     }
 
-    const accessToken = jwt.sign({ id: userData.id, mobile: userData.mobile }, JWT_SECRET, { expiresIn: '1h' });
+    const accessToken = jwt.sign(
+      { id: userData.id, mobile: userData.mobile },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
     res.json({ accessToken });
   });
 };
