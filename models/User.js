@@ -14,11 +14,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Virtual to keep "id" like before
-userSchema.virtual("id").get(function () {
-  return this._id;
-});
-
 // Create Mongoose Model
 const User = mongoose.model("User", userSchema);
 
