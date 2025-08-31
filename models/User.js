@@ -4,7 +4,7 @@ require("dotenv").config();
 // Define User Schema
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, },
+    name: { type: String },
     mobile: { type: String, required: true, unique: true },
     email: { type: String },
     gender: { type: String, enum: ["male", "female"] },

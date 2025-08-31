@@ -1,4 +1,4 @@
-const User = require("../models/User");
+import User from "../models/User.js";
 const Order = require("../models/Order");
 const Transaction = require("../models/Transaction");
 const Tour = require("../models/Tour");
