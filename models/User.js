@@ -1,77 +1,83 @@
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-const { readData, writeData } = require('../utils/fileHandler');
-const { v4: uuidv4 } = require('uuid');
+// Define User Schema
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    mobile: { type: String, required: true, unique: true },
+    email: { type: String },
+    password: { type: String, required: true },
+    gender: { type: String, enum: ["male", "female"] },
+    otpCode: { type: String },
+    otpExpires: { type: Date },
+  },
+  { timestamps: true }
+);
 
-const USERS_FILE = 'User.json';
+// Virtual to keep "id" like before
+userSchema.virtual("id").get(function () {
+  return this._id;
+});
+
+// Create Mongoose Model
+const User = mongoose.model("User", userSchema);
 
 // Get all users
 const getAllUsers = async () => {
-  return await readData(USERS_FILE);
+  return await User.find();
 };
 
 // Get user by ID
 const getUserById = async (id) => {
-  const users = await readData(USERS_FILE);
-  return users.find(user => user.id === id);
+  return await User.findById(id);
 };
 
 // Get user by mobile
 const getUserByMobile = async (mobile) => {
-  const users = await readData(USERS_FILE);
-  return users.find(user => user.mobile === mobile);
+  return await User.findOne({ mobile });
 };
 
 // Create a new user
 const createUser = async (userData) => {
-  const users = await readData(USERS_FILE);
-  
   // Check for unique mobile
-  if (users.some(user => user.mobile === userData.mobile)) {
-    throw new Error('Mobile number must be unique');
-  }
-  
+  const existingUser = await User.findOne({ mobile: userData.mobile });
+  if (existingUser) throw new Error("Mobile number must be unique");
+
   // Validate gender
-  if (userData.gender && !['male', 'female'].includes(userData.gender)) {
-    throw new Error('Gender must be either male or female');
+  if (userData.gender && !["male", "female"].includes(userData.gender)) {
+    throw new Error("Gender must be either male or female");
   }
-  
-  const newUser = { id: uuidv4(), ...userData, otpExpires: null };
-  users.push(newUser);
-  await writeData(USERS_FILE, users);
+
+  const newUser = new User({ ...userData, otpExpires: null });
+  await newUser.save();
   return newUser;
 };
 
 // Update an existing user
 const updateUser = async (id, updatedData) => {
-  const users = await readData(USERS_FILE);
-  const index = users.findIndex(user => user.id === id);
-  if (index === -1) return null;
-  
-  // If updating mobile, ensure uniqueness
-  if (updatedData.mobile && updatedData.mobile !== users[index].mobile) {
-    if (users.some(user => user.mobile === updatedData.mobile)) {
-      throw new Error('Mobile number must be unique');
-    }
+  const user = await User.findById(id);
+  if (!user) return null;
+
+  // Check mobile uniqueness
+  if (updatedData.mobile && updatedData.mobile !== user.mobile) {
+    const existingUser = await User.findOne({ mobile: updatedData.mobile });
+    if (existingUser) throw new Error("Mobile number must be unique");
   }
-  
+
   // Validate gender
-  if (updatedData.gender && !['male', 'female'].includes(updatedData.gender)) {
-    throw new Error('Gender must be either male or female');
+  if (updatedData.gender && !["male", "female"].includes(updatedData.gender)) {
+    throw new Error("Gender must be either male or female");
   }
-  
-  users[index] = { ...users[index], ...updatedData };
-  await writeData(USERS_FILE, users);
-  return users[index];
+
+  Object.assign(user, updatedData);
+  await user.save();
+  return user;
 };
 
 // Delete a user
 const deleteUser = async (id) => {
-  let users = await readData(USERS_FILE);
-  const userIndex = users.findIndex(user => user.id === id);
-  if (userIndex === -1) return null;
-  const deletedUser = users.splice(userIndex, 1)[0];
-  await writeData(USERS_FILE, users);
-  return deletedUser;
+  return await User.findByIdAndDelete(id);
 };
 
 module.exports = {
