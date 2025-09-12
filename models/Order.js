@@ -1,57 +1,83 @@
-const { readData, writeData } = require('../utils/fileHandler');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
-const ORDERS_FILE = 'Order.json';
+const orderSchema = new mongoose.Schema(
+  {
+    id: {
+      type: String,
+      default: uuidv4,
+      unique: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    tourId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tour",
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      default: 1,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    status: {
+      type: String,
+      default: "pending",
+    },
+    // هر فیلد دیگه‌ای که میخوای داخل order
+  },
+  { timestamps: true }
+);
+
+const Order = mongoose.model("Order", orderSchema);
+
+// ---------- فانکشن‌ها همون قبلی ----------
 
 const getAllOrders = async () => {
-  return await readData(ORDERS_FILE);
+  return await Order.find();
 };
 
 const getOrderById = async (id) => {
-  const orders = await readData(ORDERS_FILE);
-  return orders.find(order => order.id === id);
+  return await Order.findOne({ id });
 };
-const getOrderByUserId = async (id) => {
-  const orders = await readData(ORDERS_FILE);
-  return orders.find(order => order.userId === id);
+
+const getOrderByUserId = async (userId) => {
+  return await Order.findOne({ userId });
 };
-const getOrdersByUserId = async (id) => {
-  const orders = await readData(ORDERS_FILE);
-  return orders.filter(order => order.userId === id);
+
+const getOrdersByUserId = async (userId) => {
+  return await Order.find({ userId });
 };
 
 const createOrder = async (orderData) => {
-  const orders = await readData(ORDERS_FILE);
-  const newOrder = { id: uuidv4(), ...orderData, createdAt: new Date() };
-  orders.push(newOrder);
-  await writeData(ORDERS_FILE, orders);
-  return newOrder;
+  const newOrder = new Order({ ...orderData, id: uuidv4(), createdAt: new Date() });
+  return await newOrder.save();
 };
 
 const updateOrder = async (id, updatedData) => {
-  const orders = await readData(ORDERS_FILE);
-  const index = orders.findIndex(order => order.id === id);
-  if (index === -1) return null;
-  orders[index] = { ...orders[index], ...updatedData };
-  await writeData(ORDERS_FILE, orders);
-  return orders[index];
+  return await Order.findOneAndUpdate({ id }, updatedData, { new: true });
 };
 
 const deleteOrder = async (id) => {
-  let orders = await readData(ORDERS_FILE);
-  const orderIndex = orders.findIndex(order => order.id === id);
-  if (orderIndex === -1) return null;
-  const deletedOrder = orders.splice(orderIndex, 1)[0];
-  await writeData(ORDERS_FILE, orders);
-  return deletedOrder;
+  return await Order.findOneAndDelete({ id });
 };
 
 module.exports = {
   getAllOrders,
   getOrderById,
+  getOrderByUserId,
+  getOrdersByUserId,
   createOrder,
   updateOrder,
   deleteOrder,
-  getOrderByUserId,
-  getOrdersByUserId
 };
