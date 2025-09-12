@@ -10,12 +10,13 @@ const basketSchema = new mongoose.Schema({
 const Basket = mongoose.model("Basket", basketSchema);
 
 async function addToBasket(TourData) {
-  const baskets = new Basket({ tourData: TourData });
-  return baskets[baskets.length - 1];
+  const basket = new Basket({ tourData: TourData });
+  return await basket.save();
 }
 
 async function getFromBasket() {
-  return await Basket.find();
+  const baskets = await Basket.find();
+  return baskets[baskets.length - 1]; // آخرین رکورد
 }
 
 module.exports = {
