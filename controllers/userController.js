@@ -5,7 +5,7 @@ const Tour = require("../models/Tour");
 
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.getUserById(req.user._id); 
+    const user = await User.findById(req.user._id);
     if (!user) {
       return res
         .status(404)
@@ -28,9 +28,11 @@ exports.updateProfile = async (req, res) => {
     // Prevent updating sensitive fields directly
     delete updateData.otpCode;
     delete updateData.otpExpires;
-    delete updateData._id; // _id را نمی‌توان تغییر داد
+    delete updateData._id;
 
-    const updatedUser = await User.updateUser(req.user._id, updateData);
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, updateData, {
+      new: true,
+    });
     if (!updatedUser) {
       return res
         .status(404)
@@ -50,12 +52,12 @@ exports.updateProfile = async (req, res) => {
 
 exports.getUserTours = async (req, res) => {
   try {
-    const orders = await Order.getOrdersByUserId(req.user._id);
+    const orders = await Order.find({ userId: req.user._id });
     if (!orders?.length) return res.json([]);
 
     const tourIds = orders.map((order) => order.tourId);
+    const tours = await Tour.find({ _id: { $in: tourIds } });
 
-    const tours = await Promise.all(tourIds.map((id) => Tour.getTourById(id)));
     res.json(tours);
   } catch (err) {
     console.error("Error in getUserTours:", err.message);
@@ -65,9 +67,7 @@ exports.getUserTours = async (req, res) => {
 
 exports.getUserTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.getTransactionsByUserId(
-      req.user._id
-    );
+    const transactions = await Transaction.find({ userId: req.user._id });
     if (!transactions.length) return res.json([]);
 
     res.json(transactions);

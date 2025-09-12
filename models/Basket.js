@@ -1,15 +1,24 @@
-const { writeData, readData } = require("../utils/fileHandler");
+const mongoose = require("mongoose");
 
-const Basket_FILE = 'Basket.json';
+const basketSchema = new mongoose.Schema({
+  tourData: {
+    type: Object,
+    required: true,
+  },
+});
 
-async function addToBasket (TourData) {
- await writeData(Basket_FILE, TourData)
+const Basket = mongoose.model("Basket", basketSchema);
+
+async function addToBasket(TourData) {
+  const basket = new Basket({ tourData: TourData });
+  return await basket.save();
 }
-async function  getFromBasket  () {
-  return await readData(Basket_FILE)
+
+async function getFromBasket() {
+  return await Basket.find();
 }
 
 module.exports = {
-addToBasket,
-getFromBasket
+  addToBasket,
+  getFromBasket,
 };
