@@ -10,8 +10,8 @@ const basketSchema = new mongoose.Schema({
 const Basket = mongoose.model("Basket", basketSchema);
 
 async function addToBasket(TourData) {
-  const basket = new Basket({ tourData: TourData });
-  return await basket.save();
+  const baskets = new Basket({ tourData: TourData });
+  return baskets[baskets.length - 1];
 }
 
 async function getFromBasket() {
