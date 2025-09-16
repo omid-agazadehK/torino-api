@@ -18,8 +18,11 @@ async function getFromBasket() {
   const baskets = await Basket.find();
   return baskets[baskets.length - 1]; // آخرین رکورد
 }
-
+async function deleteBasket(basketId) {
+  return await Basket.findByIdAndDelete(basketId);
+}
 module.exports = {
   addToBasket,
   getFromBasket,
+  deleteBasket,
 };
