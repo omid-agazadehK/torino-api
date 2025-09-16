@@ -13,7 +13,25 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("✅ MongoDB Connected"))
+  .then(async () => {
+    console.log("✅ MongoDB Connected");
+
+    // پاک کردن index قدیمی id_1
+    try {
+      const result = await mongoose.connection
+        .collection("orders")
+        .dropIndex("id_1");
+      console.log("Index dropped:", result);
+    } catch (err) {
+      if (err.codeName === "IndexNotFound") {
+        console.log("Index id_1 پیدا نشد، نیازی به حذف نیست.");
+      } else {
+        console.error("خطا در حذف index:", err);
+      }
+    }
+
+    mongoose.connection.close();
+  })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 app.use(
