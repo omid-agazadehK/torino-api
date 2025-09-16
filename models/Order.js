@@ -1,75 +1,38 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
 
 const orderSchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      default: uuidv4,
-      unique: true,
-    },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    tourId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tour",
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      default: 1,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    status: {
-      type: String,
-      default: "pending",
-    },
-    // هر فیلد دیگه‌ای که میخوای داخل order
+    nationalCode: { type: String, required: true },
+    fullName: { type: String, required: true },
+    gender: { type: String, enum: ["male", "female"], required: true },
+    birthDate: { type: Date, required: true },
   },
-  { timestamps: true }
+  { timestamps: true } // createdAt و updatedAt خودکار ساخته میشن
 );
 
 const Order = mongoose.model("Order", orderSchema);
 
-// ---------- فانکشن‌ها همون قبلی ----------
+// ---------- فانکشن‌های CRUD ----------
 
-const getAllOrders = async () => {
-  return await Order.find();
-};
+const getAllOrders = async () => Order.find();
 
-const getOrderById = async (id) => {
-  return await Order.findOne({ id });
-};
+const getOrderById = async (_id) => Order.findById(_id);
 
-const getOrderByUserId = async (userId) => {
-  return await Order.findOne({ userId });
-};
+const getOrderByUserId = async (userId) => Order.findOne({ userId });
 
-const getOrdersByUserId = async (userId) => {
-  return await Order.find({ userId });
-};
+const getOrdersByUserId = async (userId) => Order.find({ userId });
 
 const createOrder = async (orderData) => {
-  const newOrder = new Order({ ...orderData, id: uuidv4(), createdAt: new Date() });
+  const newOrder = new Order(orderData);
   return await newOrder.save();
 };
 
-const updateOrder = async (id, updatedData) => {
-  return await Order.findOneAndUpdate({ id }, updatedData, { new: true });
+const updateOrder = async (_id, updatedData) => {
+  return await Order.findByIdAndUpdate(_id, updatedData, { new: true });
 };
 
-const deleteOrder = async (id) => {
-  return await Order.findOneAndDelete({ id });
+const deleteOrder = async (_id) => {
+  return await Order.findByIdAndDelete(_id);
 };
 
 module.exports = {

@@ -6,61 +6,31 @@ const Transaction = require("../models/Transaction");
 exports.createOrder = async (req, res) => {
   const { nationalCode, fullName, gender, birthDate } = req.body;
 
-  // گرفتن سبد خرید
-  let basket = await Basket.getFromBasket(); // الان Mongoose برگشت میده
+  const basket = await Basket.getFromBasket(); // آخرین سند
+  if (!basket) return res.status(404).json({ message: "سبد خرید شما خالی است" });
 
-  if (!basket?.length) {
-    return res.status(404).json({ message: "سبد خرید شما خالی است" });
-  }
-
-  const tourId = basket[0].tourData._id; // همون اولین آیتم سبد
+  const tourId = basket.tourData._id;
 
   if (!nationalCode || !fullName || !gender || !birthDate) {
     return res.status(400).json({ message: "تمامی فیلدهای ضروری را پر کنید!" });
   }
 
   try {
-    // Validate tour
-    const tour = await Tour.findById(tourId);
-    if (!tour) {
-      return res.status(404).json({ message: "تور درخواستی یافت نشد!" });
-    }
+    const tour = await Tour.getTourById(tourId);
+    if (!tour) return res.status(404).json({ message: "تور درخواستی یافت نشد!" });
+    if (tour.availableSeats <= 0) return res.status(400).json({ message: "ظرفیت تور پر است!" });
 
-    // Check seat availability
-    if (tour.availableSeats <= 0) {
-      return res.status(400).json({ message: "ظرفیت تور پر است!" });
-    }
-
-    // Create order
-    const orderData = {
-      userId: req.user._id,
-      tourId,
-      nationalCode,
-      fullName,
-      gender,
-      birthDate: new Date(birthDate),
-      createdAt: new Date(),
-    };
+    const orderData = { userId: req.user.id, tourId, nationalCode, fullName, gender, birthDate: new Date(birthDate) };
     const order = await Order.createOrder(orderData);
 
-    // Create transaction
-    const transactionData = {
-      userId: req.user._id,
-      amount: tour.price,
-      type: "Purchase",
-      createdAt: new Date(),
-    };
-    const transaction = await Transaction.createTransaction(transactionData);
+    await Transaction.createTransaction({ userId: req.user.id, orderId: order._id, type: "Purchase", amount: tour.price });
 
-    // Update tour seats
-    await Tour.findByIdAndUpdate(tourId, {
-      availableSeats: tour.availableSeats - 1,
-    });
+    await Tour.updateTour(tourId, { availableSeats: tour.availableSeats - 1 });
 
-    // خالی کردن سبد (یا آپدیت کردن)
-    await Basket.addToBasket({}); // همون فانکشن موجود، میتونی بعداً کنترلش کنی
+    // پاک کردن آخرین سبد
+    await Basket.deleteBasket(basket._id); // فانکشن deleteBasket بساز که یک سبد رو پاک کنه
 
-    res.json({ message: "تور با موفقیت خریداری شد." });
+    res.json({ message: "تور با موفقیت خریداری شد.", order });
   } catch (err) {
     console.error("Error in createOrder:", err.message);
     res.status(500).json({ message: "خطا در ایجاد سفارش." });
