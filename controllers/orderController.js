@@ -9,7 +9,7 @@ exports.createOrder = async (req, res) => {
   const basket = await Basket.getFromBasket(); // آخرین سند
   if (!basket) return res.status(404).json({ message: "سبد خرید شما خالی است" });
 
-  const tourId = basket.tourData._id;
+  const tourId = basket.tourData.id;
 
   if (!nationalCode || !fullName || !gender || !birthDate) {
     return res.status(400).json({ message: "تمامی فیلدهای ضروری را پر کنید!" });
