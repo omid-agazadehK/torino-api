@@ -32,7 +32,7 @@ const updateOrder = async (_id, updatedData) => {
 };
 
 const deleteOrder = async (_id) => {
-  return await Order.findByIdAndDelete(_id);
+  return await Order.deleteMany({});
 };
 
 module.exports = {
