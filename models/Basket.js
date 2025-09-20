@@ -19,7 +19,7 @@ async function getFromBasket() {
   return baskets[baskets.length - 1]; // آخرین رکورد
 }
 async function deleteBasket(basketId) {
-  return await Basket.findByIdAndDelete(basketId);
+  return await Basket.deleteMany({});
 }
 module.exports = {
   addToBasket,
