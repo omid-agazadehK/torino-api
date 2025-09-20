@@ -23,7 +23,7 @@ exports.createOrder = async (req, res) => {
     const orderData = { userId: req.user.id, tourId, nationalCode, fullName, gender, birthDate: new Date(birthDate) };
     const order = await Order.createOrder(orderData);
 
-    await Transaction.createTransaction({ userId: req.user.id, orderId: order._id, type: "Purchase", amount: tour.price });
+    await Transaction.createTransaction({ userId: req.user._id, orderId: order._id, type: "Purchase", amount: tour.price });
 
     await Tour.updateTour(tourId, { availableSeats: tour.availableSeats - 1 });
 
