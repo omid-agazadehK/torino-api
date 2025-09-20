@@ -1,41 +1,36 @@
-const { readData, writeData } = require('../utils/fileHandler');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require("mongoose");
 
-const TRANSACTIONS_FILE = 'Transaction.json';
+const transactionSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  orderId: { type: String },
+  amount: { type: Number },
+  type: { type: String },
+});
+
+const Transaction = mongoose.model("Transaction", transactionSchema);
 
 const getAllTransactions = async () => {
-  return await readData(TRANSACTIONS_FILE);
+  return await Transaction.find({});
 };
 
 const getTransactionsByUserId = async (id) => {
-  const transactions = await readData(TRANSACTIONS_FILE);
-  return transactions.filter(transaction => transaction.userId === id);
+  return await Transaction.find({ userId: id });
 };
 
 const createTransaction = async (transactionData) => {
-  const transactions = await readData(TRANSACTIONS_FILE);
-  const newTransaction = { id: uuidv4(), ...transactionData, createdAt: new Date() };
-  transactions.push(newTransaction);
-  await writeData(TRANSACTIONS_FILE, transactions);
-  return newTransaction;
+  const newTransaction = new Transaction({
+    ...transactionData,
+    createdAt: new Date(),
+  });
+  return await newTransaction.save();
 };
 
 const updateTransaction = async (id, updatedData) => {
-  const transactions = await readData(TRANSACTIONS_FILE);
-  const index = transactions.findIndex(transaction => transaction.id === id);
-  if (index === -1) return null;
-  transactions[index] = { ...transactions[index], ...updatedData };
-  await writeData(TRANSACTIONS_FILE, transactions);
-  return transactions[index];
+  return await Transaction.findByIdAndUpdate(id, updatedData, { new: true });
 };
 
 const deleteTransaction = async (id) => {
-  let transactions = await readData(TRANSACTIONS_FILE);
-  const transactionIndex = transactions.findIndex(transaction => transaction.id === id);
-  if (transactionIndex === -1) return null;
-  const deletedTransaction = transactions.splice(transactionIndex, 1)[0];
-  await writeData(TRANSACTIONS_FILE, transactions);
-  return deletedTransaction;
+  return await Transaction.findByIdAndDelete(id);
 };
 
 module.exports = {
