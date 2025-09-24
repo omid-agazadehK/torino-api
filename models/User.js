@@ -10,6 +10,15 @@ const userSchema = new mongoose.Schema(
     gender: { type: String, enum: ["male", "female"] },
     otpCode: { type: String },
     otpExpires: { type: Date },
+    firstName: { type: String },
+    lastName: { type: String },
+    birthDate: { type: Date },
+    nationalCode: { type: Number },
+    payment: {
+      shaba_code: { type: String },
+      debitCard_code: { type: String },
+      accountIdentifier: { type: String },
+    },
   },
   { timestamps: true }
 );

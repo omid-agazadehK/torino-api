@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const transactionSchema = new mongoose.Schema({
   userId: { type: String, required: true },
-  orderId: { type: String }, // اختیاری، اگر به Order وصل باشه
+  orderId: { type: String },
   amount: { type: Number },
   type: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+const Transaction = mongoose.model("Transaction", transactionSchema);
 
 const getAllTransactions = async () => {
   return await Transaction.find({});
