@@ -2,7 +2,7 @@ const Order = require("../models/Order");
 const Tour = require("../models/Tour");
 const Basket = require("../models/Basket");
 const Transaction = require("../models/Transaction");
-const UserModel = require("../models/User");
+const { User } = require("../models/User"); // مدل مستقیم
 exports.createOrder = async (req, res) => {
   const { nationalCode, fullName, gender, birthDate } = req.body;
 
@@ -33,11 +33,11 @@ exports.createOrder = async (req, res) => {
     };
     const order = await Order.createOrder(orderData);
 
-    const user = await UserModel.getUserById(req.user._id);
+    const user = await User.findById(req.user._id);
     if (user) {
-      user.tours = user.tours || ["س"];
-      user.tours.push(tourId);  
-      await UserModel.updateUser(user._id, { tours: user.tours }); // ذخیره تغییرات
+      user.tours = user.tours || [];
+      user.tours.push(tourId);
+      await user.save(); // این بار حتماً ذخیره می‌شود
     }
     await Transaction.createTransaction({
       userId: req.user._id,

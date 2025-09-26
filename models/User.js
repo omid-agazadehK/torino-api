@@ -83,6 +83,7 @@ const deleteUser = async (id) => {
 };
 
 module.exports = {
+  User,
   getAllUsers,
   getUserById,
   getUserByMobile,
