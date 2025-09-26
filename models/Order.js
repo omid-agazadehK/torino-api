@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema(
   {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    tour: { type: mongoose.Schema.Types.ObjectId, ref: "Tour", required: true },
     nationalCode: { type: String, required: true },
     fullName: { type: String, required: true },
     gender: { type: String, enum: ["male", "female"], required: true },

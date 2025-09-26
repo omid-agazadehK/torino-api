@@ -20,7 +20,7 @@ exports.createOrder = async (req, res) => {
     if (!tour) return res.status(404).json({ message: "تور درخواستی یافت نشد!" });
     if (tour.availableSeats <= 0) return res.status(400).json({ message: "ظرفیت تور پر است!" });
 
-    const orderData = { userId: req.user.id, tourId, nationalCode, fullName, gender, birthDate: new Date(birthDate) };
+    const orderData = { userId: req.user._id, tourId, nationalCode, fullName, gender, birthDate: new Date(birthDate) };
     const order = await Order.createOrder(orderData);
 
     await Transaction.createTransaction({ userId: req.user._id, orderId: order._id, type: "Purchase", amount: tour.price });
