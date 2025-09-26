@@ -2,7 +2,7 @@ const Order = require("../models/Order");
 const Tour = require("../models/Tour");
 const Basket = require("../models/Basket");
 const Transaction = require("../models/Transaction");
-const User = require("../models/User"); // ← اضافه شد
+const UserModel = require("../models/User"); 
 exports.createOrder = async (req, res) => {
   const { nationalCode, fullName, gender, birthDate } = req.body;
 
@@ -32,8 +32,8 @@ exports.createOrder = async (req, res) => {
       birthDate: new Date(birthDate),
     };
     const order = await Order.createOrder(orderData);
-    
-    const user = await User.findById(req.user._id);
+
+    const user = await UserModel.findById(req.user._id);
     if (user) {
       user.tours.push(tourId);
       await user.save();
