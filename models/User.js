@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     mobile: { type: String, required: true, unique: true },
     email: { type: String },
     gender: { type: String, enum: ["male", "female"] },
-    tours: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tour" }],
+    tours: [{ type: String }],
     otpCode: { type: String },
     otpExpires: { type: Date },
     birthDate: { type: Date },
