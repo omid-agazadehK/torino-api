@@ -35,8 +35,9 @@ exports.createOrder = async (req, res) => {
 
     const user = await UserModel.getUserById(req.user._id);
     if (user) {
-      user.tours.push(tourId); // UUID تور یا ObjectId
-      await UserModel.updateUser(user._id, { tours: user.tours });
+      user.tours = user.tours || ["س"];
+      user.tours.push(tourId);  
+      await UserModel.updateUser(user._id, { tours: user.tours }); // ذخیره تغییرات
     }
     await Transaction.createTransaction({
       userId: req.user._id,
