@@ -48,14 +48,16 @@ exports.getUserTours = async (req, res) => {
   try { 
     const orders = await Order.getOrdersByUserId(req.user._id); 
     if (!orders?.length) return res.json([]); 
-    const tourIds = orders.map((order) => order.tourId); 
+
+    const tourIds = orders.map((order) => order.tour); // ← توجه: order.tour نه order.tourId
     const tours = await Promise.all(tourIds.map((id) => Tour.getTourById(id))); 
+
     res.json(tours); 
   } catch (err) { 
     console.error("Error in getUserTours:", err.message); 
     res.status(500).json({ message: "خطا در دریافت تورهای کاربر." }); 
   } 
-}; 
+};
 
 exports.getUserTransactions = async (req, res) => { 
   try { 

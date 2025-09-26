@@ -20,9 +20,9 @@ const getAllOrders = async () => Order.find();
 
 const getOrderById = async (_id) => Order.findById(_id);
 
-const getOrderByUserId = async (userId) => Order.findOne({ userId });
+const getOrderByUserId = async (userId) => Order.findOne({ user: userId });
 
-const getOrdersByUserId = async (userId) => Order.find({ userId });
+const getOrdersByUserId = async (userId) => Order.find({ user: userId });
 
 const createOrder = async (orderData) => {
   const newOrder = new Order(orderData);
